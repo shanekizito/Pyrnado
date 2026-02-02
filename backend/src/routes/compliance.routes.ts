@@ -1,16 +1,20 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
+import { authMiddleware, AuthRequest } from '../middleware/auth.middleware';
 
 const router = Router();
 
+// Apply auth middleware
+router.use(authMiddleware as any);
+
 // GET /api/compliance/items - List compliance items
-router.get('/items', async (req: Request, res: Response) => {
+router.get('/items', async (req: AuthRequest, res: Response) => {
     try {
         const type = req.query.type as string;
         const status = req.query.status as string;
         const riskLevel = req.query.riskLevel as string;
 
-        const where: any = {};
+        const where: any = { companyId: req.companyId };
         if (type) where.type = type;
         if (status) where.status = status;
         if (riskLevel) where.riskLevel = riskLevel;
@@ -27,12 +31,13 @@ router.get('/items', async (req: Request, res: Response) => {
 });
 
 // POST /api/compliance/kyc - Submit KYC
-router.post('/kyc', async (req: Request, res: Response) => {
+router.post('/kyc', async (req: AuthRequest, res: Response) => {
     try {
         const { entity, details } = req.body;
 
         const kycItem = await prisma.complianceItem.create({
             data: {
+                companyId: req.companyId!,
                 type: 'kyc',
                 entity,
                 status: 'pending',
@@ -56,7 +61,7 @@ router.post('/kyc', async (req: Request, res: Response) => {
 });
 
 // GET /api/compliance/kyc/:id - Get KYC status
-router.get('/kyc/:id', async (req: Request, res: Response) => {
+router.get('/kyc/:id', async (req: AuthRequest, res: Response) => {
     try {
         const item = await prisma.complianceItem.findUnique({
             where: { id: req.params.id }
@@ -73,12 +78,13 @@ router.get('/kyc/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/compliance/aml - Run AML check
-router.post('/aml', async (req: Request, res: Response) => {
+router.post('/aml', async (req: AuthRequest, res: Response) => {
     try {
         const { entity, details } = req.body;
 
         const amlItem = await prisma.complianceItem.create({
             data: {
+                companyId: req.companyId!,
                 type: 'aml',
                 entity,
                 status: 'pending',
@@ -105,12 +111,12 @@ router.post('/aml', async (req: Request, res: Response) => {
 });
 
 // GET /api/compliance/reports - Compliance reports
-router.get('/reports', async (req: Request, res: Response) => {
+router.get('/reports', async (req: AuthRequest, res: Response) => {
     try {
         const startDate = req.query.startDate as string;
         const endDate = req.query.endDate as string;
 
-        const where: any = {};
+        const where: any = { companyId: req.companyId };
         if (startDate && endDate) {
             where.date = {
                 gte: new Date(startDate),

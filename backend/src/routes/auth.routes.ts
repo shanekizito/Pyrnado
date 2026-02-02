@@ -63,6 +63,7 @@ router.post('/signup', async (req: Request, res: Response) => {
                     wallet: '0x71C7...f9a1',
                     kycStatus: 'verified',
                     totalPaid: 12500,
+                    companyId: company.id
                 },
                 {
                     name: 'Sarah Chen',
@@ -73,6 +74,7 @@ router.post('/signup', async (req: Request, res: Response) => {
                     wallet: '0x3aB2...eD44',
                     kycStatus: 'verified',
                     totalPaid: 8400,
+                    companyId: company.id
                 }
             ]
         });
