@@ -1,0 +1,325 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  password  String    @default("password123")
+  companyId String
+  company   Company   @relation(fields: [companyId], references: [id])
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Company {
+  id              String           @id @default(uuid())
+  name            String
+  email           String
+  phone           String?
+  country         String
+  address         String?
+  isTestMode      Boolean          @default(true)
+  users           User[]
+  apiKeys         ApiKey[]
+  webhooks        Webhook[]
+  usageMetrics    UsageMetric[]
+  transactions    Transaction[]
+  remittances     Remittance[]
+  recipients      Recipient[]
+  workers         Worker[]
+  payrollBatches  PayrollBatch[]
+  assets          Asset[]
+  swaps           Swap[]
+  contracts       Contract[]
+  agents          Agent[]
+  complianceItems ComplianceItem[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model UsageMetric {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  type      String // api_call, webhook_sent
+  count     Int      @default(0)
+  timestamp DateTime @default(now())
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  type        String // payroll, remittance, escrow, deposit, withdrawal, swap
+  description String
+  amount      Float
+  currency    String   @default("USDC")
+  isIncoming  Boolean
+  status      String // pending, processing, settled, failed
+  timestamp   DateTime @default(now())
+  fees        Float?
+  chain       String?
+  txHash      String?
+  metadata    String? // JSON string for additional data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Remittance {
+  id               String    @id @default(uuid())
+  companyId        String
+  company          Company   @relation(fields: [companyId], references: [id])
+  sender           String
+  recipientId      String
+  recipient        Recipient @relation(fields: [recipientId], references: [id])
+  recipientCountry String
+  amount           Float
+  currency         String    @default("USDC")
+  localAmount      Float
+  localCurrency    String
+  fxRate           Float
+  fee              Float
+  deliveryMethod   String // wallet, bank, mobile-money, cash-agent
+  status           String // pending, processing, completed, failed
+  createdDate      DateTime  @default(now())
+  completedDate    DateTime?
+  txHash           String?
+  chain            String?
+  agentLocation    String?
+  pickupCode       String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  note             String?
+}
+
+model Recipient {
+  id            String       @id @default(uuid())
+  companyId     String
+  company       Company      @relation(fields: [companyId], references: [id])
+  name          String
+  email         String?
+  phone         String
+  country       String
+  walletAddress String?
+  bankAccount   String?
+  mobileNumber  String?
+  remittances   Remittance[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Worker {
+  id          String           @id @default(uuid())
+  companyId   String
+  company     Company          @relation(fields: [companyId], references: [id])
+  name        String
+  role        String
+  email       String           @unique
+  phone       String
+  country     String
+  wallet      String
+  bankAccount String?
+  kycStatus   String // verified, pending, failed
+  lastPayment DateTime?
+  totalPaid   Float            @default(0)
+  avatar      String?
+  payments    PayrollPayment[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model PayrollBatch {
+  id            String           @id @default(uuid())
+  companyId     String
+  company       Company          @relation(fields: [companyId], references: [id])
+  name          String
+  workerCount   Int
+  totalAmount   Float
+  status        String // draft, pending, approved, processing, completed
+  createdDate   DateTime         @default(now())
+  scheduledDate DateTime?
+  completedDate DateTime?
+  payments      PayrollPayment[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model PayrollPayment {
+  id        String       @id @default(uuid())
+  batchId   String
+  batch     PayrollBatch @relation(fields: [batchId], references: [id])
+  workerId  String
+  worker    Worker       @relation(fields: [workerId], references: [id])
+  amount    Float
+  currency  String       @default("USDC")
+  status    String // pending, processing, completed, failed
+  txHash    String?
+  chain     String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Asset {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  symbol    String
+  name      String
+  balance   Float
+  usdValue  Float
+  change24h Float
+  chain     String
+  color     String
+  icon      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, symbol])
+}
+
+model Swap {
+  id         String   @id @default(uuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id])
+  fromAsset  String
+  toAsset    String
+  fromAmount Float
+  toAmount   Float
+  rate       Float
+  fee        Float
+  status     String // pending, completed, failed
+  txHash     String?
+  chain      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Contract {
+  id              String      @id @default(uuid())
+  companyId       String
+  company         Company     @relation(fields: [companyId], references: [id])
+  title           String
+  description     String?
+  client          String
+  contractor      String
+  totalAmount     Float
+  lockedAmount    Float
+  releasedAmount  Float       @default(0)
+  status          String // draft, active, completed, disputed, cancelled
+  startDate       DateTime
+  endDate         DateTime
+  chain           String
+  contractAddress String?
+  isPublic        Boolean     @default(false)
+  views           Int         @default(0)
+  milestones      Milestone[]
+  bids            ContractBid[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model ContractBid {
+  id             String   @id @default(uuid())
+  contractId     String
+  contract       Contract @relation(fields: [contractId], references: [id])
+  contractorName String
+  contractorEmail String
+  proposal       String
+  amount         Float
+  status         String   // pending, accepted, rejected
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Milestone {
+  id            String    @id @default(uuid())
+  contractId    String
+  contract      Contract  @relation(fields: [contractId], references: [id])
+  title         String
+  description   String
+  amount        Float
+  status        String // pending, in-progress, completed, disputed
+  dueDate       DateTime
+  completedDate DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Agent {
+  id                    String             @id @default(uuid())
+  companyId             String
+  company               Company            @relation(fields: [companyId], references: [id])
+  name                  String
+  location              String
+  country               String
+  status                String // active, inactive, pending
+  rating                Float              @default(0)
+  totalPayouts          Float              @default(0)
+  completedTransactions Int                @default(0)
+  pendingPayouts        Float              @default(0)
+  phone                 String
+  email                 String             @unique
+  joinedDate            DateTime           @default(now())
+  transactions          AgentTransaction[]
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+}
+
+model AgentTransaction {
+  id        String   @id @default(uuid())
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  type      String // payout, commission
+  amount    Float
+  status    String // pending, completed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ComplianceItem {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  type      String // kyc, aml, sanctions, transaction
+  entity    String
+  status    String // approved, pending, flagged, rejected
+  riskLevel String // low, medium, high
+  date      DateTime @default(now())
+  details   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ApiKey {
+  id        String    @id @default(uuid())
+  companyId String
+  company   Company   @relation(fields: [companyId], references: [id])
+  name      String
+  key       String    @unique
+  lastUsed  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Webhook {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  url       String
+  events    String // JSON array of event types
+  secret    String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

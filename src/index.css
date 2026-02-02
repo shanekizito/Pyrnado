@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Space+Grotesk:wght@300..700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Pure Premium Light Mode - Institutional Standard */
+    --background: 210 20% 98.7%;
+    /* Clean off-white #F8F9FB */
+    --foreground: 220 15% 12%;
+    /* Deeper text for contrast #1E2125 */
+    --card: 0 0% 100%;
+    /* Pure white */
+    --card-foreground: 220 15% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 12%;
+    --primary: 172 100% 21%;
+    /* #006b5d - Institutional Teal */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 15% 15%;
+    --muted: 220 14% 95%;
+    /* Slightly darker muted for better separation */
+    --muted-foreground: 220 8% 46%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 15% 12%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 92%;
+    /* Crisper but soft border */
+    --input: 220 13% 92%;
+    --ring: 172 100% 21%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Calm Financial Interface - Dark Mode */
+    --background: 0 0% 6%;
+    /* #0F0F0F - True black background */
+    --foreground: 0 0% 95%;
+    /* #F2F2F2 - High contrast text */
+
+    --card: 0 0% 9%;
+    /* #171717 - Subtle card contrast */
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 186 30% 45%;
+    /* #50949d - Muted teal/blue-green accent */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 15%;
+    /* #262626 - Neutral element background */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 63%;
+    /* #A1A1AA - Secondary text */
+
+    --accent: 0 0% 15%;
+    /* Hover states */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 15%;
+    /* #262626 - Subtle border */
+    --input: 0 0% 15%;
+    --ring: 186 20% 35%;
+    /* Very subtle focus ring */
+
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 186 30% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 186 30% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-foreground font-medium tracking-tight;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    letter-spacing: -0.015em;
+  }
+
+  code,
+  pre,
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Native-like Scrollbar (Minimalist) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Timeless Card - Adaptive */
+  /* Timeless Card - Adaptive */
+  .premium-card {
+    @apply bg-card text-card-foreground rounded-xl border border-border transition-all duration-300;
+    /* Removed heavy shadows for a flatter look */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .premium-card {
+    /* Subtle border only */
+    box-shadow: none;
+  }
+
+  .premium-card-hover {
+    @apply premium-card;
+  }
+
+  .premium-card-hover:hover {
+    @apply border-zinc-400 dark:border-zinc-700;
+  }
+
+  /* 3D Icons - Usage: Metric Cards */
+  .icon-3d {
+    @apply relative flex items-center justify-center rounded-lg overflow-hidden transition-all duration-200;
+    @apply bg-zinc-50 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700;
+  }
+
+  .dark .icon-3d {
+    @apply text-zinc-400;
+    box-shadow: none;
+  }
+
+  /* Neutral variant only - for calm, professional appearance */
+  .icon-neutral {
+    @apply bg-muted text-muted-foreground border border-border shadow-sm relative flex items-center justify-center rounded-lg overflow-hidden;
+  }
+
+  .dark .icon-neutral {
+    @apply bg-muted text-zinc-400 border-border;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus:ring-1 focus:ring-white/20;
+  }
+
+  .divider-subtle {
+    @apply border-b border-[var(--border)];
+  }
+
+  .backdrop-premium {
+    @apply bg-background/80 backdrop-blur-md border-b border-border;
+  }
+}
+
+@layer components {
+
+  /* Solid, Tactile Buttons */
+  /* Solid, Tactile Buttons */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-semibold rounded-lg shadow-sm;
+    @apply border border-transparent;
+    @apply hover:opacity-90;
+    @apply transition-opacity duration-100;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground font-medium rounded-lg;
+    @apply border border-border;
+    @apply hover:bg-secondary/80;
+    @apply transition-colors duration-100;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-muted-foreground font-medium rounded-lg;
+    @apply hover:bg-accent hover:text-foreground;
+    @apply transition-colors duration-100;
+  }
+
+  /* Metric Card Specifics */
+  .metric-label {
+    @apply text-[11px] font-semibold text-muted-foreground uppercase tracking-widest;
+  }
+
+  .metric-value {
+    @apply text-2xl font-semibold text-foreground tracking-tight;
+  }
+
+  /* Card Anatomy */
+  .card-header {
+    @apply px-4 py-3 border-b border-[var(--border)] flex items-center justify-between;
+  }
+
+  .card-body {
+    @apply p-4;
+  }
+
+  /* Status Badge - Compact & Solid */
+  .badge-solid {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border;
+  }
+}
+
+/* User Requested Font Classes */
+.ibm-plex-mono-thin {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.ibm-plex-mono-extralight {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.ibm-plex-mono-light {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.ibm-plex-mono-regular {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.ibm-plex-mono-medium {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.ibm-plex-mono-semibold {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.ibm-plex-mono-bold {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.ibm-plex-mono-thin-italic {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.ibm-plex-mono-extralight-italic {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.ibm-plex-mono-light-italic {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.ibm-plex-mono-regular-italic {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.ibm-plex-mono-medium-italic {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.ibm-plex-mono-semibold-italic {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.ibm-plex-mono-bold-italic {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 700;
+  font-style: italic;
+}
